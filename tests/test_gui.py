@@ -155,6 +155,25 @@ class GuiTests(unittest.TestCase):
         self.assertIn("Сообщение должно содержать", tab.status.get())
         self.assertTrue(tab.client.connected)
 
+    def test_successful_send_clears_previous_input_error(self):
+        tab = self.application.chat_tab
+        tab.host_chat()
+        tab.send_message()
+        self.assertIn("Сообщение должно содержать", tab.status.get())
+        tab.message_value.set("Исправленный текст")
+        tab.send_message()
+
+        self.assertIn("Подключено:", tab.status.get())
+        self.wait_until(lambda: "Исправленный текст" in tab.history.get("1.0", "end"))
+
+    def test_connection_without_server_reports_error_and_keeps_controls_enabled(self):
+        tab = self.application.chat_tab
+        tab.connect_button.invoke()
+
+        self.assertIsNone(tab.client)
+        self.assertIn("Нет соединения", tab.status.get())
+        self.assertNotIn("disabled", tab.connect_button.state())
+
     def test_invalid_name_does_not_start_server(self):
         tab = self.application.chat_tab
         tab.name_value.set("   ")

@@ -136,6 +136,7 @@ class ChatTab(ttk.Frame):
             self.status.set(str(error))
         else:
             self.message_value.set("")
+            self.status.set(f"Подключено: {self.client.name} · 127.0.0.1:{self.port}")
 
     def _poll_messages(self) -> None:
         """Переносит сообщения из очереди в виджет в главном потоке Tkinter."""
