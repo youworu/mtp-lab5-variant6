@@ -18,3 +18,9 @@ class Application(tk.Tk):
         self.notebook.pack(fill="both", expand=True, padx=12, pady=12)
         self.widgets_tab = WidgetsTab(self.notebook)
         self.notebook.add(self.widgets_tab, text="Основное")
+        self.protocol("WM_DELETE_WINDOW", self.close)
+
+    def close(self) -> None:
+        """Завершает обработчики вкладок и закрывает окно."""
+        self.widgets_tab.close()
+        self.destroy()

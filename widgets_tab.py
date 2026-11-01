@@ -1,4 +1,4 @@
-"""Текстовое поле и обработчик кнопки."""
+"""Текстовое поле и прогрессбар."""
 
 import tkinter as tk
 from tkinter import ttk
@@ -28,7 +28,69 @@ class WidgetsTab(ttk.Frame):
             text_frame, textvariable=self.output_text, wraplength=730
         ).grid(row=1, column=0, columnspan=2, sticky="w", pady=(12, 0))
 
+        progress_frame = ttk.LabelFrame(self, text="Прогресс", padding=12)
+        progress_frame.grid(row=1, column=0, sticky="ew", pady=(0, 16))
+        progress_frame.columnconfigure(0, weight=1)
+        self.progress_value = tk.IntVar(value=0)
+        self.progress = ttk.Progressbar(
+            progress_frame, maximum=100, variable=self.progress_value
+        )
+        self.progress.grid(row=0, column=0, sticky="ew", padx=(0, 12))
+        self.progress_text = tk.StringVar(value="0%")
+        ttk.Label(progress_frame, textvariable=self.progress_text, width=6).grid(
+            row=0, column=1
+        )
+        controls = ttk.Frame(progress_frame)
+        controls.grid(row=1, column=0, columnspan=2, sticky="w", pady=(12, 0))
+        self.start_button = ttk.Button(
+            controls, text="Запустить", command=self.start_progress
+        )
+        self.start_button.pack(side="left", padx=(0, 8))
+        ttk.Button(controls, text="Пауза", command=self.pause_progress).pack(
+            side="left", padx=(0, 8)
+        )
+        ttk.Button(controls, text="Сбросить", command=self.reset_progress).pack(
+            side="left"
+        )
+        self._progress_job = None
+
     def display_text(self) -> None:
         """Показывает введённый текст или сообщение о пустом поле."""
         text = self.text_value.get().strip()
         self.output_text.set(text if text else "Введите текст в поле выше.")
+
+    def start_progress(self) -> None:
+        """Запускает обновление без блокировки цикла событий."""
+        if self._progress_job is not None:
+            return
+        if self.progress_value.get() == 100:
+            self.progress_value.set(0)
+        self.start_button.state(["disabled"])
+        self._advance_progress()
+
+    def _advance_progress(self) -> None:
+        value = min(100, self.progress_value.get() + 2)
+        self.progress_value.set(value)
+        self.progress_text.set(f"{value}%")
+        self._progress_job = None
+        if value < 100:
+            self._progress_job = self.after(80, self._advance_progress)
+        else:
+            self.start_button.state(["!disabled"])
+
+    def pause_progress(self) -> None:
+        """Останавливает обновление, сохраняя текущее значение."""
+        if self._progress_job is not None:
+            self.after_cancel(self._progress_job)
+            self._progress_job = None
+        self.start_button.state(["!disabled"])
+
+    def reset_progress(self) -> None:
+        """Останавливает прогрессбар и возвращает его в начало."""
+        self.pause_progress()
+        self.progress_value.set(0)
+        self.progress_text.set("0%")
+
+    def close(self) -> None:
+        """Отменяет отложенный вызов перед закрытием окна."""
+        self.pause_progress()
