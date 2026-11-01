@@ -13,6 +13,7 @@ class Application(tk.Tk):
 
     def __init__(self, name: str = "Дарья", port: int = 8765) -> None:
         super().__init__()
+        self._closed = False
         self.title(f"Лабораторная №5 — {name}")
         self.geometry("960x680")
         self.minsize(820, 600)
@@ -28,6 +29,10 @@ class Application(tk.Tk):
 
     def close(self) -> None:
         """Завершает обработчики вкладок и закрывает окно."""
+        if self._closed:
+            return
         self.widgets_tab.close()
         self.chat_tab.close()
+        self.update_idletasks()
+        self._closed = True
         self.destroy()
