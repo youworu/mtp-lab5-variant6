@@ -55,7 +55,7 @@ class PlotTab(ttk.Frame):
         self.axes.plot(x_values, y_values, color="#2458a6", linewidth=2)
         self.axes.axhline(0, color="gray", linewidth=0.7)
         self.axes.axvline(0, color="gray", linewidth=0.7)
-        self.axes.set_title(f"y = {a:g}x² + {b:g}x + {c:g}")
+        self.axes.set_title(f"y = {a:g}x² {b:+g}x {c:+g}")
         self.axes.set_xlabel("x")
         self.axes.set_ylabel("y")
         self.axes.grid(True, alpha=0.3)
