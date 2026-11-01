@@ -3,6 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from chat_tab import ChatTab
 from plot_tab import PlotTab
 from widgets_tab import WidgetsTab
 
@@ -21,9 +22,12 @@ class Application(tk.Tk):
         self.notebook.add(self.widgets_tab, text="Основное")
         self.plot_tab = PlotTab(self.notebook)
         self.notebook.add(self.plot_tab, text="График")
+        self.chat_tab = ChatTab(self.notebook, name, port)
+        self.notebook.add(self.chat_tab, text="Чат")
         self.protocol("WM_DELETE_WINDOW", self.close)
 
     def close(self) -> None:
         """Завершает обработчики вкладок и закрывает окно."""
         self.widgets_tab.close()
+        self.chat_tab.close()
         self.destroy()
