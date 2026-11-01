@@ -1,7 +1,8 @@
-"""Текстовое поле и прогрессбар."""
+"""Текстовое поле, прогрессбар и выбор файла."""
 
 import tkinter as tk
-from tkinter import ttk
+from pathlib import Path
+from tkinter import filedialog, ttk
 
 
 class WidgetsTab(ttk.Frame):
@@ -54,6 +55,17 @@ class WidgetsTab(ttk.Frame):
         )
         self._progress_job = None
 
+        file_frame = ttk.LabelFrame(self, text="Выбор файла", padding=12)
+        file_frame.grid(row=2, column=0, sticky="ew")
+        self.file_button = ttk.Button(
+            file_frame, text="Выбрать файл…", command=self.choose_file
+        )
+        self.file_button.pack(anchor="w")
+        self.selected_file = tk.StringVar(value="Файл не выбран.")
+        ttk.Label(
+            file_frame, textvariable=self.selected_file, wraplength=730
+        ).pack(anchor="w", pady=(12, 0))
+
     def display_text(self) -> None:
         """Показывает введённый текст или сообщение о пустом поле."""
         text = self.text_value.get().strip()
@@ -94,3 +106,14 @@ class WidgetsTab(ttk.Frame):
     def close(self) -> None:
         """Отменяет отложенный вызов перед закрытием окна."""
         self.pause_progress()
+
+    def choose_file(self) -> None:
+        """Открывает системный диалог и показывает выбранный путь."""
+        filename = filedialog.askopenfilename(
+            parent=self,
+            title="Выберите файл",
+            initialdir=Path(__file__).resolve().parent / "examples",
+            filetypes=[("Текстовые файлы", "*.txt"), ("Все файлы", "*.*")],
+        )
+        if filename:
+            self.selected_file.set(filename)
