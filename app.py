@@ -3,6 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from plot_tab import PlotTab
 from widgets_tab import WidgetsTab
 
 
@@ -18,6 +19,8 @@ class Application(tk.Tk):
         self.notebook.pack(fill="both", expand=True, padx=12, pady=12)
         self.widgets_tab = WidgetsTab(self.notebook)
         self.notebook.add(self.widgets_tab, text="Основное")
+        self.plot_tab = PlotTab(self.notebook)
+        self.notebook.add(self.plot_tab, text="График")
         self.protocol("WM_DELETE_WINDOW", self.close)
 
     def close(self) -> None:
